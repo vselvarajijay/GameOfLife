@@ -1,0 +1,126 @@
+h1 Game of Life
+p Welcome to the Game of Life by Vijay Selvaraj
+
+head
+	script(type='text/javascript',src='/socket.io/socket.io.js')
+	script(type='text/javascript')
+		
+		var generating = false;
+		var grid_size = 30;
+	
+		function generateCells() {
+			var cells = new Array(grid_size);
+			for(var i=0; i<grid_size; i++) {
+				cells[i] = new Array(grid_size);
+			}
+
+
+			for(var i=0; i<grid_size; i++) {
+				for(var j=0; j<grid_size; j++){
+					var rand = Math.random()*100;
+					if(rand>=80){
+						cells[i][j]=true;
+					}
+					else {
+						cells[i][j]=false;
+					}
+				}		
+			}
+			return cells;
+		}
+
+		var population = generateCells();
+
+
+		function isAlive(cells,x, y) {
+
+			var dead_cells = 0;
+			var alive_cells = 0;
+			
+			for(var x_offset=-1;x_offset<2;x_offset++) {
+				for(var y_offset=-1;y_offset<2;y_offset++) {
+					var xpos = x+x_offset;
+					var ypos = y+y_offset;
+
+					if(xpos==x && ypos==y) continue;
+
+					if(xpos>=0 && xpos<grid_size && ypos>=0 && ypos<grid_size){
+						if(cells[xpos][ypos]) {
+							console.log('offset ' + x_offset + ' ' + y_offset);
+							alive_cells++;
+						}
+					}
+				}
+			}
+
+			console.log(alive_cells + ' ' + x + ',' + y );
+			
+			if(cells[x][y]) {
+				console.log(alive_cells);
+				if(alive_cells<2) return false;
+				if(alive_cells==2||alive_cells==3) return true;
+				if(alive_cells>3) return false;
+			} {
+				if(alive_cells==3) return true;
+			}
+				
+		}
+
+		function run_generation(cells) {
+			var cells_new = new Array(grid_size);
+			for(var i=0; i<grid_size; i++) {
+				cells_new[i] = new Array(grid_size);
+			}
+
+			for(var x=0;x<grid_size;x++)
+			{
+				for(var y=0;y<grid_size;y++)
+				{
+					if(isAlive(cells, x, y)) {
+						cells_new[x][y] = true;
+					} else {
+						cells_new[x][y] = false;
+					}
+				}
+			}
+			return cells_new;
+		}
+
+
+		function drawloops() {
+			drawlife(population);
+			population  = run_generation(population);
+			
+			var t = setTimeout("drawloops()",50);
+		}
+
+		
+		function updateTalbe(cells) {
+			for(var x=0;x<grid_size;x++) {
+				for(var y=0;y<grid_size;y++) {
+					if(cells[x][y] == true) {
+						document.getElementsByTagName('table')[0].rows[y].cells[x].style.backgroundColor = "red";
+					} else {
+						document.getElementsByTagName('table')[0].rows[y].cells[x].style.backgroundColor = "white";
+					}
+				}
+			}
+		}
+
+
+		function drawlife(cells) {
+			updateTalbe(cells);
+		}
+
+		var t = setTimeout("drawloops()", 1000);
+		
+
+body
+	table
+		each row, i in cells
+			tr
+				each cell, j in row
+					if cell 
+						td(class='alive')
+					else
+						td(class='dead')
