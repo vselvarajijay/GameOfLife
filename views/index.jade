@@ -116,11 +116,14 @@ head
 		
 
 body
-	table
-		each row, i in cells
-			tr
-				each cell, j in row
-					if cell 
-						td(class='alive')
-					else
-						td(class='dead')
+	div(id="grid")
+		table
+			each row, i in cells
+				tr
+					each cell, j in row
+						if cell 
+							td(class='alive')
+						else
+							td(class='dead')
+	div(id="controls")
+		a(href="#", class="classname", onclick="population = generateCells();") regenerate
